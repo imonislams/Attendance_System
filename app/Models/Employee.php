@@ -7,17 +7,32 @@ use Illuminate\Database\Eloquent\Model;
 class Employee extends Model
 {
     protected $fillable = [
+        'user_id',
         'department_id',
+        'shift_id',
+        'designation',
         'name',
         'email',
         'phone',
         'employee_code',
         'joining_date',
+        'status',
     ];
 
     protected $casts = [
         'joining_date' => 'date',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Relationship
+    |--------------------------------------------------------------------------
+    */
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -35,6 +50,17 @@ class Employee extends Model
 
     /*
     |--------------------------------------------------------------------------
+    | Shift Relationship
+    |--------------------------------------------------------------------------
+    */
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Attendance Relationship
     |--------------------------------------------------------------------------
     */
@@ -45,5 +71,16 @@ class Employee extends Model
             Attendance::class,
             'employee_id'
         );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Leave Relationship
+    |--------------------------------------------------------------------------
+    */
+
+    public function leaves()
+    {
+        return $this->hasMany(Leave::class);
     }
 }

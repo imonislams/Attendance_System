@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
         );
 
 
-        Shift::updateOrCreate(
+        $morningShift = Shift::updateOrCreate(
             ['name' => 'Morning'],
             [
                 'start_time' => '09:00:00',
@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        Shift::updateOrCreate(
+        $eveningShift = Shift::updateOrCreate(
             ['name' => 'Evening'],
             [
                 'start_time' => '14:00:00',
@@ -53,46 +53,88 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-
-        Employee::updateOrCreate(
-            ['email' => 'rahim@example.com'],
-            [
-                'department_id' => $it->id,
-                'name' => 'Rahim Ahmed',
-                'phone' => '01711111111',
-                'employee_code' => 'EMP001',
-                'joining_date' => '2026-01-01',
-            ]
-        );
-
-        Employee::updateOrCreate(
-            ['email' => 'karim@example.com'],
-            [
-                'department_id' => $hr->id,
-                'name' => 'Karim Hasan',
-                'phone' => '01722222222',
-                'employee_code' => 'EMP002',
-                'joining_date' => '2026-01-05',
-            ]
-        );
-
-        Employee::updateOrCreate(
-            ['email' => 'sumi@example.com'],
-            [
-                'department_id' => $accounts->id,
-                'name' => 'Sumi Akter',
-                'phone' => '01733333333',
-                'employee_code' => 'EMP003',
-                'joining_date' => '2026-01-10',
-            ]
-        );
-
-
+        // Admin User
         User::updateOrCreate(
             ['email' => 'admin@example.com'],
             [
-                'name' => 'Admin',
+                'name' => 'Admin User',
                 'password' => Hash::make('password'),
+                'role' => 'admin',
+            ]
+        );
+
+        // Employee 1
+        $user1 = User::updateOrCreate(
+            ['email' => 'rahim@example.com'],
+            [
+                'name' => 'Rahim Ahmed',
+                'password' => Hash::make('password'),
+                'role' => 'employee',
+            ]
+        );
+
+        Employee::updateOrCreate(
+            ['employee_code' => 'EMP001'],
+            [
+                'user_id' => $user1->id,
+                'department_id' => $it->id,
+                'shift_id' => $morningShift->id,
+                'designation' => 'Software Engineer',
+                'name' => 'Rahim Ahmed',
+                'email' => 'rahim@example.com',
+                'phone' => '01711111111',
+                'joining_date' => '2026-01-01',
+                'status' => 'active',
+            ]
+        );
+
+        // Employee 2
+        $user2 = User::updateOrCreate(
+            ['email' => 'karim@example.com'],
+            [
+                'name' => 'Karim Hasan',
+                'password' => Hash::make('password'),
+                'role' => 'employee',
+            ]
+        );
+
+        Employee::updateOrCreate(
+            ['employee_code' => 'EMP002'],
+            [
+                'user_id' => $user2->id,
+                'department_id' => $hr->id,
+                'shift_id' => $morningShift->id,
+                'designation' => 'HR Executive',
+                'name' => 'Karim Hasan',
+                'email' => 'karim@example.com',
+                'phone' => '01722222222',
+                'joining_date' => '2026-01-05',
+                'status' => 'active',
+            ]
+        );
+
+        // Employee 3
+        $user3 = User::updateOrCreate(
+            ['email' => 'sumi@example.com'],
+            [
+                'name' => 'Sumi Akter',
+                'password' => Hash::make('password'),
+                'role' => 'employee',
+            ]
+        );
+
+        Employee::updateOrCreate(
+            ['employee_code' => 'EMP003'],
+            [
+                'user_id' => $user3->id,
+                'department_id' => $accounts->id,
+                'shift_id' => $eveningShift->id,
+                'designation' => 'Accountant',
+                'name' => 'Sumi Akter',
+                'email' => 'sumi@example.com',
+                'phone' => '01733333333',
+                'joining_date' => '2026-01-10',
+                'status' => 'active',
             ]
         );
     }

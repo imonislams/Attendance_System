@@ -83,16 +83,16 @@
 
             <div class="form-group">
 
-                <label for="email">
-                    Email Address
+                <label for="login_id">
+                    Employee ID or Email Address
                 </label>
 
                 <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value="{{ old('email') }}"
-                    placeholder="Enter your email"
+                    type="text"
+                    id="login_id"
+                    name="login_id"
+                    value="{{ old('login_id') }}"
+                    placeholder="Enter Employee ID (e.g. EMP001) or Email"
                     required
                     autofocus
                 >

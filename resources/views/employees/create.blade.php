@@ -17,11 +17,11 @@
             </div>
 
             <h1 class="employee-page-title">
-                Add Employee
+                Add Employee Account
             </h1>
 
             <p class="employee-page-subtitle">
-                Create a new employee profile.
+                Create a new employee account with login credentials and shift assignment.
             </p>
 
         </div>
@@ -77,11 +77,11 @@
             <div>
 
                 <h2>
-                    Employee Information
+                    Employee Account Information
                 </h2>
 
                 <p>
-                    Enter the employee's basic information below.
+                    Admin-assigned Employee ID and password will be used by the employee to log in.
                 </p>
 
             </div>
@@ -101,7 +101,34 @@
             <div class="employee-form-grid">
 
 
-                <!-- NAME -->
+                <!-- EMPLOYEE ID / CODE -->
+                <div class="employee-form-group">
+
+                    <label>
+                        Employee ID
+                        <span>*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="employee_code"
+                        value="{{ old('employee_code') }}"
+                        placeholder="e.g. EMP001"
+                        required
+                    >
+
+                    @error('employee_code')
+
+                        <small class="employee-field-error">
+                            {{ $message }}
+                        </small>
+
+                    @enderror
+
+                </div>
+
+
+                <!-- FULL NAME -->
                 <div class="employee-form-group">
 
                     <label>
@@ -182,29 +209,46 @@
                 </div>
 
 
-                <!-- EMPLOYEE CODE -->
+                <!-- PASSWORD -->
                 <div class="employee-form-group">
 
                     <label>
-                        Employee Code
+                        Password
                         <span>*</span>
                     </label>
 
                     <input
-                        type="text"
-                        name="employee_code"
-                        value="{{ old('employee_code') }}"
-                        placeholder="EMP001"
+                        type="password"
+                        name="password"
+                        placeholder="Assign password"
                         required
                     >
 
-                    @error('employee_code')
+                    @error('password')
 
                         <small class="employee-field-error">
                             {{ $message }}
                         </small>
 
                     @enderror
+
+                </div>
+
+
+                <!-- CONFIRM PASSWORD -->
+                <div class="employee-form-group">
+
+                    <label>
+                        Confirm Password
+                        <span>*</span>
+                    </label>
+
+                    <input
+                        type="password"
+                        name="password_confirmation"
+                        placeholder="Confirm password"
+                        required
+                    >
 
                 </div>
 
@@ -250,6 +294,72 @@
                 </div>
 
 
+                <!-- DESIGNATION -->
+                <div class="employee-form-group">
+
+                    <label>
+                        Designation
+                    </label>
+
+                    <input
+                        type="text"
+                        name="designation"
+                        value="{{ old('designation') }}"
+                        placeholder="e.g. Software Engineer"
+                    >
+
+                    @error('designation')
+
+                        <small class="employee-field-error">
+                            {{ $message }}
+                        </small>
+
+                    @enderror
+
+                </div>
+
+
+                <!-- ASSIGNED SHIFT -->
+                <div class="employee-form-group">
+
+                    <label>
+                        Assigned Shift
+                        <span>*</span>
+                    </label>
+
+                    <select
+                        name="shift_id"
+                        required
+                    >
+
+                        <option value="">
+                            Select Shift
+                        </option>
+
+                        @foreach($shifts as $shift)
+
+                            <option
+                                value="{{ $shift->id }}"
+                                {{ old('shift_id') == $shift->id ? 'selected' : '' }}
+                            >
+                                {{ $shift->name }} ({{ substr($shift->start_time, 0, 5) }} - {{ substr($shift->end_time, 0, 5) }})
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                    @error('shift_id')
+
+                        <small class="employee-field-error">
+                            {{ $message }}
+                        </small>
+
+                    @enderror
+
+                </div>
+
+
                 <!-- JOINING DATE -->
                 <div class="employee-form-group">
 
@@ -261,11 +371,45 @@
                     <input
                         type="date"
                         name="joining_date"
-                        value="{{ old('joining_date') }}"
+                        value="{{ old('joining_date', date('Y-m-d')) }}"
                         required
                     >
 
                     @error('joining_date')
+
+                        <small class="employee-field-error">
+                            {{ $message }}
+                        </small>
+
+                    @enderror
+
+                </div>
+
+
+                <!-- STATUS -->
+                <div class="employee-form-group">
+
+                    <label>
+                        Account Status
+                        <span>*</span>
+                    </label>
+
+                    <select
+                        name="status"
+                        required
+                    >
+
+                        <option value="active" {{ old('status', 'active') === 'active' ? 'selected' : '' }}>
+                            Active
+                        </option>
+
+                        <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>
+                            Inactive (Cannot Login)
+                        </option>
+
+                    </select>
+
+                    @error('status')
 
                         <small class="employee-field-error">
                             {{ $message }}
@@ -293,7 +437,7 @@
                     type="submit"
                     class="employee-save-btn"
                 >
-                    ✓ Save Employee
+                    ✓ Create Employee Account
                 </button>
 
             </div>
