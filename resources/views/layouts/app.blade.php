@@ -65,96 +65,141 @@
                 <span>Dashboard</span>
             </a>
 
+            @if(auth()->user()->isAdmin())
 
-            <a
-                href="/employees"
-                class="menu-item {{ request()->is('employees*') ? 'active' : '' }}"
-            >
-                <span class="menu-icon">👥</span>
-                <span>Employees</span>
-            </a>
-
-
-            <a
-                href="/departments"
-                class="menu-item {{ request()->is('departments*') ? 'active' : '' }}"
-            >
-                <span class="menu-icon">▣</span>
-                <span>Departments</span>
-            </a>
+                <a
+                    href="/employees"
+                    class="menu-item {{ request()->is('employees*') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">👥</span>
+                    <span>Employees</span>
+                </a>
 
 
-            <a
-                href="/shifts"
-                class="menu-item {{ request()->is('shifts*') ? 'active' : '' }}"
-            >
-                <span class="menu-icon">◷</span>
-                <span>Shifts</span>
-            </a>
+                <a
+                    href="/departments"
+                    class="menu-item {{ request()->is('departments*') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">▣</span>
+                    <span>Departments</span>
+                </a>
 
 
-            <p class="menu-title">
-                ATTENDANCE
-            </p>
+                <a
+                    href="/shifts"
+                    class="menu-item {{ request()->is('shifts*') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">◷</span>
+                    <span>Shifts</span>
+                </a>
 
 
-            <a
-                href="/attendance"
-                class="menu-item {{ request()->is('attendance') ? 'active' : '' }}"
-            >
-                <span class="menu-icon">✓</span>
-                <span>Attendance</span>
-            </a>
+                <p class="menu-title">
+                    ATTENDANCE MANAGEMENT
+                </p>
 
 
-            <a
-                href="/attendance/check-in"
-                class="menu-item {{ request()->is('attendance/check-in') ? 'active' : '' }}"
-            >
-                <span class="menu-icon">→</span>
-                <span>Check In</span>
-            </a>
+                <a
+                    href="/attendance"
+                    class="menu-item {{ request()->is('attendance') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">✓</span>
+                    <span>All Attendance</span>
+                </a>
 
 
-            <a
-                href="/attendance/history"
-                class="menu-item {{ request()->is('attendance/history') ? 'active' : '' }}"
-            >
-                <span class="menu-icon">◴</span>
-                <span>Attendance History</span>
-            </a>
+                <a
+                    href="/attendance/check-in"
+                    class="menu-item {{ request()->is('attendance/check-in') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">→</span>
+                    <span>Manual Check In</span>
+                </a>
 
 
-            <p class="menu-title">
-                REPORTS
-            </p>
+                <a
+                    href="/attendance/history"
+                    class="menu-item {{ request()->is('attendance/history') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">◴</span>
+                    <span>Attendance History</span>
+                </a>
+
+                <p class="menu-title">
+                    LEAVES & OVERTIME
+                </p>
+
+                <a
+                    href="/leaves"
+                    class="menu-item {{ request()->is('leaves*') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">📋</span>
+                    <span>Leave Applications</span>
+                </a>
 
 
-            <a
-                href="/reports/daily"
-                class="menu-item {{ request()->is('reports/daily') ? 'active' : '' }}"
-            >
-                <span class="menu-icon">▤</span>
-                <span>Daily Report</span>
-            </a>
+                <p class="menu-title">
+                    REPORTS
+                </p>
 
 
-            <a
-                href="/reports/monthly"
-                class="menu-item {{ request()->is('reports/monthly') ? 'active' : '' }}"
-            >
-                <span class="menu-icon">▥</span>
-                <span>Monthly Report</span>
-            </a>
+                <a
+                    href="/reports/daily"
+                    class="menu-item {{ request()->is('reports/daily') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">▤</span>
+                    <span>Daily Report</span>
+                </a>
 
 
-            <a
-                href="/reports/employee"
-                class="menu-item {{ request()->is('reports/employee') ? 'active' : '' }}"
-            >
-                <span class="menu-icon">▤</span>
-                <span>Employee Report</span>
-            </a>
+                <a
+                    href="/reports/monthly"
+                    class="menu-item {{ request()->is('reports/monthly') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">▥</span>
+                    <span>Monthly Report</span>
+                </a>
+
+
+                <a
+                    href="/reports/employee"
+                    class="menu-item {{ request()->is('reports/employee') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">▤</span>
+                    <span>Employee Report</span>
+                </a>
+
+            @else
+
+                <p class="menu-title">
+                    MY WORKSPACE
+                </p>
+
+                <a
+                    href="/employee/my-attendance"
+                    class="menu-item {{ request()->is('employee/my-attendance') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">✓</span>
+                    <span>My Attendance</span>
+                </a>
+
+                <a
+                    href="/leaves"
+                    class="menu-item {{ request()->is('leaves*') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">📋</span>
+                    <span>Apply / My Leaves</span>
+                </a>
+
+                <a
+                    href="/profile"
+                    class="menu-item {{ request()->is('profile*') ? 'active' : '' }}"
+                >
+                    <span class="menu-icon">👤</span>
+                    <span>My Profile & Settings</span>
+                </a>
+
+            @endif
 
         </div>
 
@@ -176,7 +221,7 @@
                     </strong>
 
                     <small>
-                        Administrator
+                        {{ auth()->user()->isAdmin() ? 'Administrator' : (auth()->user()->employee ? auth()->user()->employee->employee_code : 'Employee') }}
                     </small>
 
                 </div>
@@ -242,7 +287,7 @@
                         </strong>
 
                         <span>
-                            Admin
+                            {{ auth()->user()->isAdmin() ? 'Admin' : 'Employee' }}
                         </span>
 
                     </div>
@@ -324,6 +369,30 @@
 
 
             <!-- ERROR MESSAGE -->
+
+            @if (session('error'))
+
+                <div class="alert alert-danger">
+
+                    <div class="alert-icon">
+                        !
+                    </div>
+
+                    <div>
+                        {{ session('error') }}
+                    </div>
+
+                    <button
+                        onclick="this.parentElement.remove()"
+                        class="alert-close"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+            @endif
+
 
             @if ($errors->any())
 

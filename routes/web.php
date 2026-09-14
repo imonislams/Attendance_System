@@ -8,6 +8,8 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 
 
@@ -34,204 +36,84 @@ Route::post('/logout', [AuthController::class, 'logout'])
 
 Route::middleware('auth')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Dashboard
-    |--------------------------------------------------------------------------
-    */
-
     Route::get('/', function () {
         return redirect('/dashboard');
     });
 
-    Route::get('/dashboard', [
-        DashboardController::class,
-        'index'
-    ]);
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Shared Leave Routes
+    Route::get('/leaves', [LeaveController::class, 'index'])->name('leaves.index');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Employee
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/employees', [
-        EmployeeController::class,
-        'index'
-    ]);
-
-    Route::get('/employees/create', [
-        EmployeeController::class,
-        'create'
-    ]);
-
-    Route::post('/employees', [
-        EmployeeController::class,
-        'store'
-    ]);
-
-    Route::get('/employees/{id}', [
-        EmployeeController::class,
-        'show'
-    ]);
-
-    Route::get('/employees/{id}/edit', [
-        EmployeeController::class,
-        'edit'
-    ]);
-
-    Route::put('/employees/{id}', [
-        EmployeeController::class,
-        'update'
-    ]);
-
-    Route::delete('/employees/{id}', [
-        EmployeeController::class,
-        'destroy'
-    ]);
-
+    // Profile & Password Change
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
     /*
     |--------------------------------------------------------------------------
-    | Department
+    | Admin-Only Routes
     |--------------------------------------------------------------------------
     */
+    Route::middleware('role:admin')->group(function () {
 
-    Route::get('/departments', [
-        DepartmentController::class,
-        'index'
-    ]);
+        // Employee Management
+        Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
+        Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
+        Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
+        Route::get('/employees/{id}', [EmployeeController::class, 'show'])->name('employees.show');
+        Route::get('/employees/{id}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
+        Route::put('/employees/{id}', [EmployeeController::class, 'update'])->name('employees.update');
+        Route::delete('/employees/{id}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
 
-    Route::get('/departments/create', [
-        DepartmentController::class,
-        'create'
-    ]);
+        // Department Management
+        Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
+        Route::get('/departments/create', [DepartmentController::class, 'create'])->name('departments.create');
+        Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
+        Route::get('/departments/{id}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');
+        Route::put('/departments/{id}', [DepartmentController::class, 'update'])->name('departments.update');
+        Route::delete('/departments/{id}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
 
-    Route::post('/departments', [
-        DepartmentController::class,
-        'store'
-    ]);
+        // Shift Management
+        Route::get('/shifts', [ShiftController::class, 'index'])->name('shifts.index');
+        Route::get('/shifts/create', [ShiftController::class, 'create'])->name('shifts.create');
+        Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
+        Route::get('/shifts/{id}/edit', [ShiftController::class, 'edit'])->name('shifts.edit');
+        Route::put('/shifts/{id}', [ShiftController::class, 'update'])->name('shifts.update');
+        Route::delete('/shifts/{id}', [ShiftController::class, 'destroy'])->name('shifts.destroy');
 
-    Route::get('/departments/{id}/edit', [
-        DepartmentController::class,
-        'edit'
-    ]);
+        // Admin Attendance Management
+        Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+        Route::get('/attendance/check-in', [AttendanceController::class, 'checkIn'])->name('attendance.check-in');
+        Route::post('/attendance/check-in', [AttendanceController::class, 'storeCheckIn'])->name('attendance.store-check-in');
+        Route::post('/attendance/{id}/check-out', [AttendanceController::class, 'checkOut'])->name('attendance.check-out');
+        Route::get('/attendance/history', [AttendanceController::class, 'history'])->name('attendance.history');
+        Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
+        Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
+        Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
 
-    Route::put('/departments/{id}', [
-        DepartmentController::class,
-        'update'
-    ]);
+        // Admin Leave Approval Routes
+        Route::post('/leaves/{id}/approve', [LeaveController::class, 'approve'])->name('leaves.approve');
+        Route::post('/leaves/{id}/reject', [LeaveController::class, 'reject'])->name('leaves.reject');
 
-    Route::delete('/departments/{id}', [
-        DepartmentController::class,
-        'destroy'
-    ]);
-
+        // Reports
+        Route::get('/reports/daily', [ReportController::class, 'daily'])->name('reports.daily');
+        Route::get('/reports/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
+        Route::get('/reports/employee', [ReportController::class, 'employee'])->name('reports.employee');
+    });
 
     /*
     |--------------------------------------------------------------------------
-    | Shift
+    | Employee Routes (Self check-in/out, my attendance, leaves)
     |--------------------------------------------------------------------------
     */
+    Route::middleware('role:employee')->group(function () {
+        Route::post('/employee/check-in', [AttendanceController::class, 'employeeCheckIn'])->name('employee.check-in');
+        Route::post('/employee/check-out', [AttendanceController::class, 'employeeCheckOut'])->name('employee.check-out');
+        Route::get('/employee/my-attendance', [AttendanceController::class, 'myAttendance'])->name('employee.my-attendance');
 
-    Route::get('/shifts', [
-        ShiftController::class,
-        'index'
-    ]);
-
-    Route::get('/shifts/create', [
-        ShiftController::class,
-        'create'
-    ]);
-
-    Route::post('/shifts', [
-        ShiftController::class,
-        'store'
-    ]);
-
-    Route::get('/shifts/{id}/edit', [
-        ShiftController::class,
-        'edit'
-    ]);
-
-    Route::put('/shifts/{id}', [
-        ShiftController::class,
-        'update'
-    ]);
-
-    Route::delete('/shifts/{id}', [
-        ShiftController::class,
-        'destroy'
-    ]);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Attendance
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/attendance', [
-        AttendanceController::class,
-        'index'
-    ]);
-
-    Route::get('/attendance/check-in', [
-        AttendanceController::class,
-        'checkIn'
-    ]);
-
-    Route::post('/attendance/check-in', [
-        AttendanceController::class,
-        'storeCheckIn'
-    ]);
-
-    Route::post('/attendance/{id}/check-out', [
-        AttendanceController::class,
-        'checkOut'
-    ]);
-
-    Route::get('/attendance/history', [
-        AttendanceController::class,
-        'history'
-    ]);
-
-    Route::get('/attendance/{id}/edit', [
-        AttendanceController::class,
-        'edit'
-    ]);
-
-    Route::put('/attendance/{id}', [
-        AttendanceController::class,
-        'update'
-    ]);
-
-    Route::delete('/attendance/{id}', [
-        AttendanceController::class,
-        'destroy'
-    ]);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Reports
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/reports/daily', [
-        ReportController::class,
-        'daily'
-    ]);
-
-    Route::get('/reports/monthly', [
-        ReportController::class,
-        'monthly'
-    ]);
-
-    Route::get('/reports/employee', [
-        ReportController::class,
-        'employee'
-    ]);
+        // Leave Application Routes
+        Route::get('/leaves/create', [LeaveController::class, 'create'])->name('leaves.create');
+        Route::post('/leaves', [LeaveController::class, 'store'])->name('leaves.store');
+    });
 
 });

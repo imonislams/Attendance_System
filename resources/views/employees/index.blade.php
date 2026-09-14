@@ -19,7 +19,7 @@
             </h1>
 
             <p class="employee-page-subtitle">
-                Manage employees, departments and employee information.
+                Manage employee profiles, credentials, shifts, and status.
             </p>
         </div>
 
@@ -144,27 +144,27 @@
                         </th>
 
                         <th>
-                            EMPLOYEE
+                            EMPLOYEE ID
                         </th>
 
                         <th>
-                            CODE
+                            NAME
                         </th>
 
                         <th>
-                            DEPARTMENT
+                            DEPARTMENT & DESIGNATION
                         </th>
 
                         <th>
-                            EMAIL
+                            SHIFT
                         </th>
 
                         <th>
-                            PHONE
+                            CONTACT
                         </th>
 
                         <th>
-                            JOINING DATE
+                            STATUS
                         </th>
 
                         <th class="action-column">
@@ -193,6 +193,16 @@
                             </td>
 
 
+                            <!-- EMPLOYEE ID -->
+                            <td>
+
+                                <strong class="employee-code">
+                                    {{ $employee->employee_code }}
+                                </strong>
+
+                            </td>
+
+
                             <!-- EMPLOYEE -->
                             <td>
 
@@ -213,9 +223,9 @@
                                             {{ $employee->name }}
                                         </div>
 
-                                        <div class="employee-role">
-                                            Employee
-                                        </div>
+                                        <small class="employee-role text-muted">
+                                            Joined {{ $employee->joining_date ? $employee->joining_date->format('M d, Y') : '-' }}
+                                        </small>
 
                                     </div>
 
@@ -224,73 +234,47 @@
                             </td>
 
 
-                            <!-- CODE -->
+                            <!-- DEPARTMENT & DESIGNATION -->
                             <td>
 
-                                <span class="employee-code">
-                                    {{ $employee->employee_code }}
-                                </span>
+                                <div>
+                                    <strong>{{ $employee->department ? $employee->department->name : 'No Dept' }}</strong>
+                                </div>
+                                <small class="text-muted">{{ $employee->designation ?? 'N/A' }}</small>
 
                             </td>
 
 
-                            <!-- DEPARTMENT -->
+                            <!-- SHIFT -->
                             <td>
 
-                                @if($employee->department)
-
-                                    <span class="department-tag">
-                                        {{ $employee->department->name }}
+                                @if($employee->shift)
+                                    <span class="shift-tag">
+                                        {{ $employee->shift->name }} ({{ substr($employee->shift->start_time, 0, 5) }} - {{ substr($employee->shift->end_time, 0, 5) }})
                                     </span>
-
                                 @else
-
-                                    <span class="no-department">
-                                        No Department
-                                    </span>
-
+                                    <span class="no-department">No Shift</span>
                                 @endif
 
                             </td>
 
 
-                            <!-- EMAIL -->
+                            <!-- CONTACT -->
                             <td>
 
-                                <span class="employee-email">
-                                    {{ $employee->email }}
-                                </span>
+                                <div>{{ $employee->email }}</div>
+                                <small class="text-muted">{{ $employee->phone }}</small>
 
                             </td>
 
 
-                            <!-- PHONE -->
+                            <!-- STATUS -->
                             <td>
 
-                                <span class="employee-phone">
-                                    {{ $employee->phone }}
-                                </span>
-
-                            </td>
-
-
-                            <!-- JOINING DATE -->
-                            <td>
-
-                                @if($employee->joining_date)
-
-                                    <span class="joining-date">
-
-                                        {{ $employee->joining_date->format('d M, Y') }}
-
-                                    </span>
-
+                                @if($employee->status === 'active')
+                                    <span class="status-badge status-present" style="background:#e6f4ea; color:#137333; padding: 4px 8px; border-radius:4px; font-weight:600; font-size:12px;">Active</span>
                                 @else
-
-                                    <span class="no-data">
-                                        -
-                                    </span>
-
+                                    <span class="status-badge status-absent" style="background:#fce8e6; color:#c5221f; padding: 4px 8px; border-radius:4px; font-weight:600; font-size:12px;">Inactive</span>
                                 @endif
 
                             </td>
@@ -300,7 +284,6 @@
                             <td class="action-cell">
 
                                 <div class="employee-actions">
-
 
                                     <!-- EDIT -->
                                     <a
@@ -317,7 +300,7 @@
                                         action="{{ url('/employees/' . $employee->id) }}"
                                         method="POST"
                                         class="employee-delete-form"
-                                        onsubmit="return confirm('Are you sure you want to delete {{ $employee->name }}?')"
+                                        onsubmit="return confirm('Are you sure you want to delete employee {{ $employee->name }}?')"
                                     >
 
                                         @csrf

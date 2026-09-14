@@ -21,7 +21,7 @@
             </h1>
 
             <p class="employee-page-subtitle">
-                Update employee information.
+                Update employee details, login credentials, and assigned shift.
             </p>
 
         </div>
@@ -87,7 +87,7 @@
 
                 <p>
                     Employee Code:
-                    {{ $employee->employee_code }}
+                    <strong>{{ $employee->employee_code }}</strong>
                 </p>
 
             </div>
@@ -107,6 +107,32 @@
 
 
             <div class="employee-form-grid">
+
+
+                <!-- EMPLOYEE ID / CODE -->
+                <div class="employee-form-group">
+
+                    <label>
+                        Employee ID
+                        <span>*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="employee_code"
+                        value="{{ old('employee_code', $employee->employee_code) }}"
+                        required
+                    >
+
+                    @error('employee_code')
+
+                        <small class="employee-field-error">
+                            {{ $message }}
+                        </small>
+
+                    @enderror
+
+                </div>
 
 
                 <!-- NAME -->
@@ -187,28 +213,42 @@
                 </div>
 
 
-                <!-- EMPLOYEE CODE -->
+                <!-- RESET / CHANGE PASSWORD -->
                 <div class="employee-form-group">
 
                     <label>
-                        Employee Code
-                        <span>*</span>
+                        New Password (leave blank to keep unchanged)
                     </label>
 
                     <input
-                        type="text"
-                        name="employee_code"
-                        value="{{ old('employee_code', $employee->employee_code) }}"
-                        required
+                        type="password"
+                        name="password"
+                        placeholder="Enter new password"
                     >
 
-                    @error('employee_code')
+                    @error('password')
 
                         <small class="employee-field-error">
                             {{ $message }}
                         </small>
 
                     @enderror
+
+                </div>
+
+
+                <!-- CONFIRM PASSWORD -->
+                <div class="employee-form-group">
+
+                    <label>
+                        Confirm New Password
+                    </label>
+
+                    <input
+                        type="password"
+                        name="password_confirmation"
+                        placeholder="Confirm new password"
+                    >
 
                 </div>
 
@@ -234,13 +274,7 @@
 
                             <option
                                 value="{{ $department->id }}"
-                                {{ old(
-                                    'department_id',
-                                    $employee->department_id
-                                ) == $department->id
-                                    ? 'selected'
-                                    : ''
-                                }}
+                                {{ old('department_id', $employee->department_id) == $department->id ? 'selected' : '' }}
                             >
                                 {{ $department->name }}
                             </option>
@@ -250,6 +284,72 @@
                     </select>
 
                     @error('department_id')
+
+                        <small class="employee-field-error">
+                            {{ $message }}
+                        </small>
+
+                    @enderror
+
+                </div>
+
+
+                <!-- DESIGNATION -->
+                <div class="employee-form-group">
+
+                    <label>
+                        Designation
+                    </label>
+
+                    <input
+                        type="text"
+                        name="designation"
+                        value="{{ old('designation', $employee->designation) }}"
+                        placeholder="e.g. Senior Software Engineer"
+                    >
+
+                    @error('designation')
+
+                        <small class="employee-field-error">
+                            {{ $message }}
+                        </small>
+
+                    @enderror
+
+                </div>
+
+
+                <!-- SHIFT -->
+                <div class="employee-form-group">
+
+                    <label>
+                        Assigned Shift
+                        <span>*</span>
+                    </label>
+
+                    <select
+                        name="shift_id"
+                        required
+                    >
+
+                        <option value="">
+                            Select Shift
+                        </option>
+
+                        @foreach($shifts as $shift)
+
+                            <option
+                                value="{{ $shift->id }}"
+                                {{ old('shift_id', $employee->shift_id) == $shift->id ? 'selected' : '' }}
+                            >
+                                {{ $shift->name }} ({{ substr($shift->start_time, 0, 5) }} - {{ substr($shift->end_time, 0, 5) }})
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                    @error('shift_id')
 
                         <small class="employee-field-error">
                             {{ $message }}
@@ -271,16 +371,45 @@
                     <input
                         type="date"
                         name="joining_date"
-                        value="{{ old(
-                            'joining_date',
-                            $employee->joining_date
-                                ? $employee->joining_date->format('Y-m-d')
-                                : ''
-                        ) }}"
+                        value="{{ old('joining_date', $employee->joining_date ? $employee->joining_date->format('Y-m-d') : '') }}"
                         required
                     >
 
                     @error('joining_date')
+
+                        <small class="employee-field-error">
+                            {{ $message }}
+                        </small>
+
+                    @enderror
+
+                </div>
+
+
+                <!-- STATUS -->
+                <div class="employee-form-group">
+
+                    <label>
+                        Account Status
+                        <span>*</span>
+                    </label>
+
+                    <select
+                        name="status"
+                        required
+                    >
+
+                        <option value="active" {{ old('status', $employee->status) === 'active' ? 'selected' : '' }}>
+                            Active
+                        </option>
+
+                        <option value="inactive" {{ old('status', $employee->status) === 'inactive' ? 'selected' : '' }}>
+                            Inactive (Cannot Login)
+                        </option>
+
+                    </select>
+
+                    @error('status')
 
                         <small class="employee-field-error">
                             {{ $message }}
@@ -308,7 +437,7 @@
                     type="submit"
                     class="employee-save-btn"
                 >
-                    ✓ Update Employee
+                    ✓ Update Employee Account
                 </button>
 
             </div>

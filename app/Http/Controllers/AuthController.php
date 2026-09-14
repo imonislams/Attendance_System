@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -18,12 +21,50 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+        $request->validate([
+            'login_id' => 'required|string',
+            'password' => 'required|string',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        $loginId = trim($request->input('login_id'));
+        $password = $request->input('password');
+
+        $user = null;
+
+        if (filter_var($loginId, FILTER_VALIDATE_EMAIL)) {
+            $user = User::where('email', $loginId)->first();
+        } else {
+            $employee = Employee::where('employee_code', $loginId)->first();
+            if ($employee) {
+                if ($employee->status !== 'active') {
+                    return back()
+                        ->withInput($request->only('login_id'))
+                        ->withErrors([
+                            'login_id' => 'Your account is inactive. Please contact administrator.'
+                        ]);
+                }
+                $user = $employee->user;
+            }
+        }
+
+        if (!$user) {
+            return back()
+                ->withInput($request->only('login_id'))
+                ->withErrors([
+                    'login_id' => 'Invalid Employee ID/Email or password.'
+                ]);
+        }
+
+        if ($user->employee && $user->employee->status !== 'active') {
+            return back()
+                ->withInput($request->only('login_id'))
+                ->withErrors([
+                    'login_id' => 'Your employee account is inactive. Please contact administrator.'
+                ]);
+        }
+
+        if (Hash::check($password, $user->password)) {
+            Auth::login($user, $request->boolean('remember'));
 
             $request->session()->regenerate();
 
@@ -32,9 +73,9 @@ class AuthController extends Controller
         }
 
         return back()
-            ->withInput($request->only('email'))
+            ->withInput($request->only('login_id'))
             ->withErrors([
-                'email' => 'Invalid email or password.'
+                'login_id' => 'Invalid Employee ID/Email or password.'
             ]);
     }
 
